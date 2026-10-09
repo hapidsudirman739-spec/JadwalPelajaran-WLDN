@@ -1,1 +1,471 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Pelajaran SMKN 1 Gebang - X LP 3</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #0f2b48 0%, #051322 70%, #020912 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "⚓ 🪙";
+            position: absolute;
+            font-size: 180px;
+            opacity: 0.03;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(10, 26, 47, 0.9);
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.3), 0 0 15px rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(12px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header .badge-tag {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+        }
+
+        .header .sub-title {
+            font-size: 13px;
+            color: #90e0ef;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .clock-box {
+            background: rgba(3, 18, 36, 0.8);
+            border: 1px solid rgba(0, 180, 216, 0.4);
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: inline-block;
+            margin-top: 12px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #clock {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00f2fe;
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+
+        #date {
+            font-size: 11px;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+
+        .day-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            background: rgba(15, 42, 74, 0.7);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            color: #94a3b8;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #0077b6, #00b4d8);
+            color: #ffffff;
+            border-color: #ffd700;
+            box-shadow: 0 0 12px rgba(0, 180, 216, 0.6);
+        }
+
+        .status-card {
+            background: rgba(5, 25, 48, 0.7);
+            border-left: 4px solid #ffd700;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .status-title {
+            color: #94a3b8;
+        }
+
+        .status-val {
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        .schedule-list {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .schedule-list.active {
+            display: flex;
+        }
+
+        .item-card {
+            background: rgba(13, 38, 67, 0.6);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .item-card.active-now {
+            background: rgba(0, 180, 216, 0.15);
+            border: 1.5px solid #00f2fe;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .time-badge {
+            background: rgba(0, 180, 216, 0.15);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: #00f2fe;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .subject-box {
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subject-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .now-tag {
+            display: none;
+            background: #ff0055;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .item-card.active-now .now-tag {
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .item-card.break {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+
+        .item-card.break .time-badge {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #f87171;
+        }
+
+        .item-card.break .subject-name {
+            color: #fca5a5;
+            font-style: italic;
+        }
+
+        /* Card Tampilan Libur Akhir Pekan */
+        .weekend-card {
+            background: rgba(13, 38, 67, 0.8);
+            border: 1px dashed #ffd700;
+            border-radius: 16px;
+            padding: 35px 20px;
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+
+        .weekend-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .weekend-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffd700;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .weekend-desc {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <span class="badge-tag">⚓ AKL PERBANKAN DASAR 🪙</span>
+            <h1>KELAS X LP 3</h1>
+            <div class="sub-title">SMKN 1 GEBANG</div>
+            <div class="clock-box">
+                <div id="clock">00:00:00</div>
+                <div id="date">Hari, 00 Bulan 0000</div>
+            </div>
+        </div>
+
+        <!-- Navigasi Tab Hari -->
+        <div class="day-tabs">
+            <button class="tab-btn" id="btn-senin" onclick="manualSwitch('senin')">SEN</button>
+            <button class="tab-btn" id="btn-selasa" onclick="manualSwitch('selasa')">SEL</button>
+            <button class="tab-btn" id="btn-rabu" onclick="manualSwitch('rabu')">RAB</button>
+            <button class="tab-btn" id="btn-kamis" onclick="manualSwitch('kamis')">KAM</button>
+            <button class="tab-btn" id="btn-jumat" onclick="manualSwitch('jumat')">JUM</button>
+            <button class="tab-btn" id="btn-weekend" onclick="manualSwitch('weekend')">SAB/MGU</button>
+        </div>
+
+        <!-- Status KBM -->
+        <div class="status-card">
+            <span class="status-title">Status Saat Ini:</span>
+            <span class="status-val" id="kbm-status">Mengecek Status...</span>
+        </div>
+
+        <!-- SENIN -->
+        <div id="senin" class="schedule-list">
+            <div class="item-card" data-start="06:30" data-end="07:00"><span class="time-badge">06.30 - 07.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Apel Pagi</span></div></div>
+            <div class="item-card" data-start="07:00" data-end="07:40"><span class="time-badge">07.00 - 07.40</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Upacara Bendera</span></div></div>
+            <div class="item-card" data-start="07:40" data-end="09:40"><span class="time-badge">07.40 - 09.40</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">IPAS (3 Jam)</span></div></div>
+            <div class="item-card break" data-start="09:40" data-end="10:00"><span class="time-badge">09.40 - 10.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="10:00" data-end="11:20"><span class="time-badge">10.00 - 11.20</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Sejarah Indonesia (2 Jam)</span></div></div>
+            <div class="item-card" data-start="11:20" data-end="13:10"><span class="time-badge">11.20 - 13.10</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Informatika (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="12:00" data-end="12:30"><span class="time-badge">12.00 - 12.30</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="13:10" data-end="14:30"><span class="time-badge">13.10 - 14.30</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Matematika (2 Jam)</span></div></div>
+        </div>
+
+        <!-- SELASA -->
+        <div id="selasa" class="schedule-list">
+            <div class="item-card" data-start="06:30" data-end="07:00"><span class="time-badge">06.30 - 07.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Apel Pagi</span></div></div>
+            <div class="item-card" data-start="07:00" data-end="09:00"><span class="time-badge">07.00 - 09.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Proses Bisnis (3 Jam)</span></div></div>
+            <div class="item-card" data-start="09:00" data-end="10:40"><span class="time-badge">09.00 - 10.40</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Coding (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="09:40" data-end="10:00"><span class="time-badge">09.40 - 10.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="10:40" data-end="12:00"><span class="time-badge">10.40 - 12.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Seni Budaya (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="12:00" data-end="12:20"><span class="time-badge">12.00 - 12.20</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="12:20" data-end="13:40"><span class="time-badge">12.20 - 13.40</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Bahasa Inggris (2 Jam)</span></div></div>
+            <div class="item-card" data-start="13:40" data-end="15:00"><span class="time-badge">13.40 - 15.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">PKN (2 Jam)</span></div></div>
+        </div>
+
+        <!-- RABU -->
+        <div id="rabu" class="schedule-list">
+            <div class="item-card" data-start="06:30" data-end="07:00"><span class="time-badge">06.30 - 07.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Apel Pagi</span></div></div>
+            <div class="item-card" data-start="07:00" data-end="08:20"><span class="time-badge">07.00 - 08.20</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Informatika (2 Jam)</span></div></div>
+            <div class="item-card" data-start="08:20" data-end="09:40"><span class="time-badge">08.20 - 09.40</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Spreadsheet (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="09:40" data-end="10:00"><span class="time-badge">09.40 - 10.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="10:00" data-end="11:20"><span class="time-badge">10.00 - 11.20</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Bahasa Indonesia (2 Jam)</span></div></div>
+            <div class="item-card" data-start="11:20" data-end="13:00"><span class="time-badge">11.20 - 13.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Matematika (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="12:00" data-end="12:20"><span class="time-badge">12.00 - 12.20</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="13:00" data-end="15:00"><span class="time-badge">13.00 - 15.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Perbankan Dasar (3 Jam)</span></div></div>
+        </div>
+
+        <!-- KAMIS -->
+        <div id="kamis" class="schedule-list">
+            <div class="item-card" data-start="06:30" data-end="07:00"><span class="time-badge">06.30 - 07.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Apel Pagi</span></div></div>
+            <div class="item-card" data-start="07:00" data-end="09:00"><span class="time-badge">07.00 - 09.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">PAI (3 Jam)</span></div></div>
+            <div class="item-card" data-start="09:00" data-end="11:20"><span class="time-badge">09.00 - 11.20</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">PJOK (3 Jam)</span></div></div>
+            <div class="item-card break" data-start="09:40" data-end="10:00"><span class="time-badge">09.40 - 10.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="11:20" data-end="13:00"><span class="time-badge">11.20 - 13.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">K3LH (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="12:00" data-end="12:20"><span class="time-badge">12.00 - 12.20</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="13:00" data-end="15:00"><span class="time-badge">13.00 - 15.00</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">IPAS (3 Jam)</span></div></div>
+        </div>
+
+        <!-- JUMAT -->
+        <div id="jumat" class="schedule-list">
+            <div class="item-card" data-start="06:30" data-end="07:05"><span class="time-badge">06.30 - 07.05</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Apel Pagi / Yasinan</span></div></div>
+            <div class="item-card" data-start="07:05" data-end="08:25"><span class="time-badge">07.05 - 08.25</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">DDK Etika Profesi (2 Jam)</span></div></div>
+            <div class="item-card" data-start="08:25" data-end="10:35"><span class="time-badge">08.25 - 10.35</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Bahasa Inggris (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="09:05" data-end="09:55"><span class="time-badge">09.05 - 09.55</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT</span></div></div>
+            <div class="item-card" data-start="10:35" data-end="11:55"><span class="time-badge">10.35 - 11.55</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">Bahasa Indonesia (2 Jam)</span></div></div>
+            <div class="item-card break" data-start="11:55" data-end="12:55"><span class="time-badge">11.55 - 12.55</span><div class="subject-box"><span class="now-tag">SEKARANG</span><span class="subject-name">ISTIRAHAT (Sholat Jum'at)</span></div></div>
+        </div>
+
+        <!-- SABTU / MINGGU (WEEKEND) -->
+        <div id="weekend" class="schedule-list">
+            <div class="weekend-card">
+                <div class="weekend-icon">⚓☕🌊</div>
+                <div class="weekend-title">Hari ini akhir pekan (libur)</div>
+                <div class="weekend-desc">selamat beristirahat jaga kesehatan dan jangan nakal, thats gudd</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dayNames = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+        let isManualMode = false;
+
+        function updateRealTime() {
+            const now = new Date();
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').innerText = `${hours}:${minutes}:${seconds}`;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('date').innerText = now.toLocaleDateString('id-ID', options);
+
+            const currentDayIndex = now.getDay();
+            const currentDayName = dayNames[currentDayIndex];
+
+            if (!isManualMode) {
+                if (currentDayIndex >= 1 && currentDayIndex <= 5) {
+                    activateDayTab(currentDayName);
+                } else {
+                    activateDayTab('weekend');
+                }
+            }
+
+            checkCurrentClass(now, currentDayName);
+        }
+
+        function activateDayTab(dayId) {
+            document.querySelectorAll('.schedule-list').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            const targetList = document.getElementById(dayId);
+            const targetBtn = document.getElementById(`btn-${dayId}`);
+
+            if (targetList) targetList.classList.add('active');
+            if (targetBtn) targetBtn.classList.add('active');
+        }
+
+        function manualSwitch(dayId) {
+            isManualMode = true;
+            activateDayTab(dayId);
+        }
+
+        function checkCurrentClass(now, currentDayName) {
+            const statusEl = document.getElementById('kbm-status');
+            const activeList = document.querySelector('.schedule-list.active');
+            
+            document.querySelectorAll('.item-card').forEach(card => card.classList.remove('active-now'));
+
+            if (!activeList) return;
+
+            const activeListId = activeList.id;
+
+            if (activeListId === 'weekend') {
+                statusEl.innerText = "Libur Akhir Pekan";
+                return;
+            }
+
+            let foundCurrent = false;
+
+            if (activeListId === currentDayName) {
+                const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+                activeList.querySelectorAll('.item-card').forEach(card => {
+                    const [startH, startM] = card.dataset.start.split(':').map(Number);
+                    const [endH, endM] = card.dataset.end.split(':').map(Number);
+
+                    const startMinutes = startH * 60 + startM;
+                    const endMinutes = endH * 60 + endM;
+
+                    if (nowMinutes >= startMinutes && nowMinutes < endMinutes) {
+                        card.classList.add('active-now');
+                        foundCurrent = true;
+                        const subject = card.querySelector('.subject-name').innerText;
+                        statusEl.innerText = `Sedang Berlangsung: ${subject}`;
+                    }
+                });
+
+                if (!foundCurrent) {
+                    if (now.getHours() < 6 || (now.getHours() === 6 && now.getMinutes() < 30)) {
+                        statusEl.innerText = "Belum Masuk Jam KBM";
+                    } else {
+                        statusEl.innerText = "KBM Hari Ini Selesai";
+                    }
+                }
+            } else {
+                statusEl.innerText = `Melihat Jadwal Hari ${activeListId.toUpperCase()}`;
+            }
+        }
+
+        setInterval(updateRealTime, 1000);
+        updateRealTime();
+    </script>
+</body>
+</html>
